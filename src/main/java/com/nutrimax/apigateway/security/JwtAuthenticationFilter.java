@@ -18,11 +18,6 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
     private final JwtUtil jwtUtil;
 
-    // Rutas que NO requieren token (publicas)
-    private final List<String> rutasPublicas = List.of(
-            "/api/auth/login",
-            "/api/auth/registro");
-
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
@@ -65,8 +60,14 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
         return chain.filter(exchange.mutate().request(mutatedRequest).build());
     }
 
+    // Rutas que NO requieren token (publicas)
+    private final List<String> rutasPublicas = List.of(
+            "/api/auth/login",
+            "/api/auth/registro",
+            "/api/productos");
+
     private boolean esRutaPublica(String path) {
-        return rutasPublicas.stream().anyMatch(path::equals);
+        return rutasPublicas.stream().anyMatch(path::startsWith);
     }
 
     private Mono<Void> rechazar(ServerWebExchange exchange, String mensaje) {
